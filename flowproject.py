@@ -35,5 +35,3 @@ print(str(m_dot_tube) + ' (kg/s)')
 
 m_dot_ox = m_dot_tube / (1 + F_O)
 m_dot_fuel = F_O * m_dot_ox
-
-print('Do some stuff')
