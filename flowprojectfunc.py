@@ -84,6 +84,7 @@ def m_dot(A, P_u, T, Gas):
     return m_dot
 
 
+# Caclualte the are of the orifice based on the orifice diameter
 def A_orf(D):
     A_orf = np.pi / 4 * D**2
     return A_orf
@@ -97,3 +98,15 @@ def APu_prod(m_dot, T, Gas, P_guess):
     R = ct.gas_constant / 1000
     APu = (m_dot*np.sqrt((k*R*T)/MW))/np.sqrt((2/(k+1))**((k+1)/(k-1)))
     return APu
+
+
+# Convert from in to m
+def conv_in_m(measurement_to_convert):
+    L = np.multiply(measurement_to_convert, 0.0254)
+    return L
+
+
+# Find the index of the closest value in an array to the input variable
+def find_closest(possible, value):
+    idx = (np.abs(possible-value)).argmin()
+    return possible[idx]
