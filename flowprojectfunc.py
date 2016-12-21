@@ -101,9 +101,14 @@ def APu_prod(m_dot, T, Gas, P_guess):
 
 
 # Convert from in to m
-def conv_in_m(measurement_to_convert):
-    L = np.multiply(measurement_to_convert, 0.0254)
-    return L
+def conv_in_m(measurement_to_convert, starting_unit):
+    if starting_unit=='in':
+        output = np.multiply(measurement_to_convert, 0.0254)
+    elif starting_unit=='m':
+        output = np.divide(measurement_to_convert, 0.0254)
+    else:
+        print('Unit is not recognized')
+    return output
 
 
 # Find the index of the closest value in an array to the input variable
@@ -113,3 +118,14 @@ def find_closest(possible, value):
     else:
         print('Please use a Pandas DataFrame')
     return idx
+
+# Convert from Pa to Psi and from psi to Pa
+def conv_Pa_psi(value,starting_unit):
+    if starting_unit=='psi':
+        output = np.multiply(value, 6894.75728)
+    elif starting_unit=='Pa':
+        output = np.multiply(value, 0.000145037738007)
+    else:
+        print('Unit is not recognized')
+    return output
+    
