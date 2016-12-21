@@ -8,36 +8,31 @@ Created on Sat Dec 10 13:33:10 2016
 
 import numpy as np
 import cantera as ct
-import pandas as pd
 
 from flowprojectfunc import Fuel_Oxidizer_Cals
 from flowprojectfunc import Calc_Props
 from flowprojectfunc import Mix_rho
-from flowprojectfunc import m_dot
 from flowprojectfunc import A_orf
 from flowprojectfunc import APu_prod
 from flowprojectfunc import conv_in_m
 from flowprojectfunc import find_closest
-from flowprojectfunc import conv_Pa_psi
+
 
 fuel = 'C3H8'
 ox = 'N2O'
-phi = 1.0
+phi = 1.2
 F_O = Fuel_Oxidizer_Cals(phi, fuel, ox)
 T = 298
 P = 101325
-P_guess = 750000
+P_guess = 700000
 L = 2
 D_tube = 0.0762
 Op_freq = 1
 P_poss = np.linspace(350000, 1.380E6, num=200)
 Orifices = np.array(conv_in_m([0.040, 0.047, 0.063, 0.142], 'in'))
-Areas = A_orf(Orifices)
 
 # Create an array of lists for the possible combinations of the pressures and
 # orifice diameters
-APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, P_poss),
-                        index=P_poss, columns=Orifices)
 
 [rho_fuel, k_fuel, MW_fuel] = Calc_Props(fuel, T, P)
 [rho_ox, k_ox, MW_ox] = Calc_Props(ox, T, P)
@@ -49,10 +44,10 @@ m_dot_ox = m_dot_tube / (1 + F_O)
 m_dot_fuel = F_O * m_dot_ox
 
 APu_fuel = APu_prod(m_dot_fuel, T, fuel, P_guess)
+APu_ox = APu_prod(m_dot_ox, T, ox, P_guess)
 
-index = APu_poss.sub(APu_fuel).abs().min().idxmin()
-value = APu_poss.sub(APu_fuel).abs().min(axis=1).idxmin()
+[Pressure_f, Orifice_f] = find_closest(P_poss, APu_fuel, Orifices)
+[Pressure_ox, Orifice_ox] = find_closest(P_poss, APu_ox, Orifices)
 
-Pressure = conv_Pa_psi(value,'Pa')
-Orifice_size = conv_in_m(index, 'm')
-print(Pressure, Orifice_size)
+print( round(Pressure_f, 2), round(Orifice_f, 3))
+print( round(Pressure_ox, 2), round(Orifice_ox, 3))
