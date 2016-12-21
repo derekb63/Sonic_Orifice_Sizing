@@ -18,6 +18,7 @@ from flowprojectfunc import A_orf
 from flowprojectfunc import APu_prod
 from flowprojectfunc import conv_in_m
 from flowprojectfunc import find_closest
+from flowprojectfunc import conv_Pa_psi
 
 fuel = 'C3H8'
 ox = 'N2O'
@@ -30,7 +31,7 @@ L = 2
 D_tube = 0.0762
 Op_freq = 1
 P_poss = np.linspace(350000, 1.380E6, num=200)
-Orifices = np.array(conv_in_m([0.040, 0.047, 0.063, 0.142]))
+Orifices = np.array(conv_in_m([0.040, 0.047, 0.063, 0.142], 'in'))
 Areas = A_orf(Orifices)
 
 # Create an array of lists for the possible combinations of the pressures and
@@ -43,14 +44,15 @@ APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, P_poss),
 
 rho_mix = Mix_rho(fuel, ox, F_O, T, ct.one_atm)
 m_dot_tube = A_orf(D_tube)*L*rho_mix*Op_freq
-print(str(m_dot_tube) + ' (kg/s)')
 
 m_dot_ox = m_dot_tube / (1 + F_O)
 m_dot_fuel = F_O * m_dot_ox
 
 APu_fuel = APu_prod(m_dot_fuel, T, fuel, P_guess)
 
-
 index = APu_poss.sub(APu_fuel).abs().min().idxmin()
 value = APu_poss.sub(APu_fuel).abs().min(axis=1).idxmin()
-print(index, value)
+
+Pressure = conv_Pa_psi(value,'Pa')
+Orifice_size = conv_in_m(index, 'm')
+print(Pressure, Orifice_size)
