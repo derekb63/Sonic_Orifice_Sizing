@@ -53,5 +53,4 @@ APu_fuel = APu_prod(m_dot_fuel, T, fuel, P_guess)
 
 index = APu_poss.sub(APu_fuel).abs().min().idxmin()
 value = APu_poss.sub(APu_fuel).abs().min(axis=1).idxmin()
-APu_poss[index][value]
 print(index, value)
