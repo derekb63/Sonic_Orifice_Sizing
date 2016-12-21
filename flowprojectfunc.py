@@ -112,12 +112,15 @@ def conv_in_m(measurement_to_convert, starting_unit):
 
 
 # Find the index of the closest value in an array to the input variable
-def find_closest(possible, value):
-    if type(possible) == pd.core.frame.DataFrame:
-        idx = (np.abs(possible-value)).argmin()
-    else:
-        print('Please use a Pandas DataFrame')
-    return idx
+def find_closest(possible, value, Orifices):
+   Areas = A_orf(Orifices)
+   APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, possible),
+                    index=possible, columns=Orifices)
+   idx = APu_poss.sub(value).abs().min().idxmin()
+   val = APu_poss.sub(value).abs().min(axis=1).idxmin()
+   Pressure = conv_Pa_psi(val,'Pa')
+   Orifice_size = conv_in_m(idx, 'm')
+   return (Pressure, Orifice_size)
 
 # Convert from Pa to Psi and from psi to Pa
 def conv_Pa_psi(value,starting_unit):
