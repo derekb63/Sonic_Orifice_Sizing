@@ -112,7 +112,8 @@ def conv_in_m(measurement_to_convert, starting_unit):
 
 
 # Find the index of the closest value in an array to the input variable
-def find_closest(possible, value, Orifices):
+def find_closest(p_max, value, Orifices):
+   possible = np.linspace(350000, p_max, num=200)
    Areas = A_orf(Orifices)
    APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, possible),
                     index=possible, columns=Orifices)
