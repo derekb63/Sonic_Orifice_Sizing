@@ -79,7 +79,7 @@ def Mix_rho(fuel, ox, F_O, T, P):
 # Return the mass flow rate through the sonic orifice assuming the ideal gas
 def m_dot(A, P_u, T, Gas):
     [rho, k, MW] = Calc_Props(Gas, T, P_u)
-    R = ct.gas_constant / 1000
+    R = ct.gas_constant
     m_dot = A * P_u * k * np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((k*R*T)/MW)
     return m_dot
 
@@ -95,7 +95,7 @@ def A_orf(D):
 # the product of the two will be used to find the optimal orifice and pressure
 def APu_prod(m_dot, T, Gas, P_guess):
     [rho, k, MW] = Calc_Props(Gas, T, P_guess)
-    R = ct.gas_constant / 1000
+    R = ct.gas_constant
     APu = (m_dot*np.sqrt((k*R*T)/MW))/np.sqrt((2/(k+1))**((k+1)/(k-1)))
     return APu
 
@@ -108,5 +108,8 @@ def conv_in_m(measurement_to_convert):
 
 # Find the index of the closest value in an array to the input variable
 def find_closest(possible, value):
-    idx = (np.abs(possible-value)).argmin()
-    return possible[idx]
+    if type(possible) == pd.core.frame.DataFrame:
+        idx = (np.abs(possible-value)).argmin()
+    else:
+        print('Please use a Pandas DataFrame')
+    return idx
