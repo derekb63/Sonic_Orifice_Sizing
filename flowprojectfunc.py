@@ -136,7 +136,7 @@ def pressure_orifice_finder(gas, m_dot_gas, T, P_avg, Orifices, p_max_gas):
     # by rearranging the mass flow rate equation for a sonic orifice
     APu_gas = APu_prod(m_dot_gas, T, gas, P_avg)
     # Find the index of the closest value in an array to the input variable
-    possible = np.linspace(350000, p_max_gas, num=200)
+    possible = np.linspace(350000, p_max_gas, num=10000)
     Areas = A_orf(Orifices)
     APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, possible),
                             index=possible, columns=Orifices)
