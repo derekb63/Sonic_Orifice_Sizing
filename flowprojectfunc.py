@@ -116,19 +116,6 @@ def conv_in_m(measurement_to_convert, starting_unit, ending_unit):
     return output
 
 
-# Find the index of the closest value in an array to the input variable
-def find_closest(p_max, value, Orifices):
-    possible = np.linspace(350000, p_max, num=200)
-    Areas = A_orf(Orifices)
-    APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, possible),
-                            index=possible, columns=Orifices)
-    idx = APu_poss.sub(value).abs().min().idxmin()
-    val = APu_poss.sub(value).abs().min(axis=1).idxmin()
-    Pressure = conv_Pa_psi(val, 'Pa', 'psi')
-    Orifice_size = conv_in_m(idx, 'm', 'in')
-    return (Pressure, Orifice_size)
-
-
 # Convert from Pa to Psi and from psi to Pa
 def conv_Pa_psi(value, starting_unit, ending_unit):
     if starting_unit == ending_unit:
@@ -148,5 +135,13 @@ def pressure_orifice_finder(gas, m_dot_gas, T, P_avg, Orifices, p_max_gas):
     # APu is the product of the orifice area and upstream pressure calculated
     # by rearranging the mass flow rate equation for a sonic orifice
     APu_gas = APu_prod(m_dot_gas, T, gas, P_avg)
-    [Pressure, Orifice] = find_closest(p_max_gas, APu_gas, Orifices)
+    # Find the index of the closest value in an array to the input variable
+    possible = np.linspace(350000, p_max_gas, num=200)
+    Areas = A_orf(Orifices)
+    APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, possible),
+                            index=possible, columns=Orifices)
+    idx = APu_poss.sub(APu_gas).abs().min().idxmin()
+    val = APu_poss.sub(APu_gas).abs().min(axis=1).idxmin()
+    Pressure = conv_Pa_psi(val, 'Pa', 'psi')
+    Orifice = conv_in_m(idx, 'm', 'in')
     return (Pressure, Orifice)
