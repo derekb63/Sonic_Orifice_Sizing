@@ -14,6 +14,7 @@ from flowprojectfunc import Mix_rho
 from flowprojectfunc import A_orf
 from flowprojectfunc import conv_in_m
 from flowprojectfunc import pressure_orifice_finder
+from flowprojectfunc import m_dot
 
 t0 = time.time()
 # Input parameters to define the PDE/System variables
@@ -52,9 +53,15 @@ m_dot_fuel = F_O * m_dot_ox
 [Pressure_f, Orifice_f] = pressure_orifice_finder(fuel, m_dot_fuel, T, P_avg,
                                                   Orifices, p_max_fuel)
 
+# Calculate the error of the output variables to double check the values
+m_dot_ox_check = m_dot(Orifice_ox, Pressure_ox, T, ox)
+error_ox = np.divide(np.abs(m_dot_ox-m_dot_ox_check), m_dot_ox) * 100
 
-print(round(Pressure_f, 2), round(Orifice_f, 3))
-print(round(Pressure_ox, 2), round(Orifice_ox, 3))
+m_dot_fuel_check = m_dot(Orifice_f, Pressure_f, T, fuel)
+error_fuel = np.divide(np.abs(m_dot_fuel-m_dot_fuel_check), m_dot_fuel) * 100
+
+print(round(Pressure_f, 2), round(Orifice_f, 3), round(error_fuel, 1))
+print(round(Pressure_ox, 2), round(Orifice_ox, 3), round(error_ox, 1))
 
 t1 = time.time()
 total = t1-t0

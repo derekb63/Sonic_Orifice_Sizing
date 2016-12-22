@@ -77,7 +77,8 @@ def Mix_rho(fuel, ox, F_O, T, P):
 
 
 # Return the mass flow rate through the sonic orifice assuming the ideal gas
-def m_dot(A, P_u, T, Gas):
+def m_dot(Orifice, P_u, T, Gas):
+    A = A_orf(Orifice)
     [rho, k, MW] = Calc_Props(Gas, T, P_u)
     R = ct.gas_constant
     m_dot = A * P_u * k * np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((k*R*T)/MW)
