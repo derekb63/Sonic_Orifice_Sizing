@@ -5,9 +5,11 @@ Created on Sat Dec 10 13:33:10 2016
 
 @author: derek
 """
-
+import time
+t0 = time.time()
 import numpy as np
 import cantera as ct
+
 
 from flowprojectfunc import Fuel_Oxidizer_Cals
 from flowprojectfunc import Calc_Props
@@ -48,5 +50,9 @@ APu_ox = APu_prod(m_dot_ox, T, ox, P_guess)
 [Pressure_f, Orifice_f] = find_closest(p_max_fuel, APu_fuel, Orifices)
 [Pressure_ox, Orifice_ox] = find_closest(p_max_ox, APu_ox, Orifices)
 
-print( round(Pressure_f, 2), round(Orifice_f, 3))
-print( round(Pressure_ox, 2), round(Orifice_ox, 3))
+print(round(Pressure_f, 2), round(Orifice_f, 3))
+print(round(Pressure_ox, 2), round(Orifice_ox, 3))
+
+t1 = time.time()
+total = t1-t0
+print(total)
