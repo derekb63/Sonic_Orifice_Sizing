@@ -14,7 +14,7 @@ import cantera as ct
 
 # Fuel_Oxidizer_Cals takes the imput strings of the fuel and oxidizer as well
 # as the desired equivalence ratio and calulates the fuel/oxidizer mass ratio
-def Fuel_Oxidizer_Cals(phi, fuel, ox):
+def Fuel_Oxidizer_Ratio(phi, fuel, ox):
     Elements = ['C', 'H', 'O', 'N']
     ox_val = [0, 0, 0, 0]
     if ox == 'Air':
