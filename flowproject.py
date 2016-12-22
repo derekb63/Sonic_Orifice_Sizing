@@ -32,7 +32,7 @@ p_max_fuel = 689467
 
 # Possible orifice sizes with converted to m for inputting into the
 # find_closest function
-Orifices = np.array(conv_in_m([0.040, 0.047, 0.063, 0.142], 'in'))
+Orifices = np.array(conv_in_m([0.040, 0.047, 0.063, 0.142], 'in', 'm'))
 
 # Use the Fuel_Oxidizer_Ratio function to calculate the F/O for the mixture
 # at the specified eqivalence ratio
@@ -54,11 +54,11 @@ m_dot_fuel = F_O * m_dot_ox
                                                   Orifices, p_max_fuel)
 
 # Calculate the error of the output variables to double check the values
-m_dot_ox_check = m_dot(Orifice_ox, Pressure_ox, T, ox)
-error_ox = np.divide(np.abs(m_dot_ox-m_dot_ox_check), m_dot_ox) * 100
+m_dot_ox_check = m_dot(Orifice_ox, 'in', Pressure_ox, 'psi', T, ox)
+error_ox = np.divide(m_dot_ox-m_dot_ox_check, m_dot_ox) * 100
 
-m_dot_fuel_check = m_dot(Orifice_f, Pressure_f, T, fuel)
-error_fuel = np.divide(np.abs(m_dot_fuel-m_dot_fuel_check), m_dot_fuel) * 100
+m_dot_fuel_check = m_dot(Orifice_f, 'in', Pressure_f, 'psi', T, fuel)
+error_fuel = np.divide(m_dot_fuel-m_dot_fuel_check, m_dot_fuel) * 100
 
 print(round(Pressure_f, 2), round(Orifice_f, 3), round(error_fuel, 1))
 print(round(Pressure_ox, 2), round(Orifice_ox, 3), round(error_ox, 1))
