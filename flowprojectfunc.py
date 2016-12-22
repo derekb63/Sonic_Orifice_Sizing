@@ -102,9 +102,9 @@ def APu_prod(m_dot, T, Gas, P_guess):
 
 # Convert from in to m
 def conv_in_m(measurement_to_convert, starting_unit):
-    if starting_unit=='in':
+    if starting_unit == 'in':
         output = np.multiply(measurement_to_convert, 0.0254)
-    elif starting_unit=='m':
+    elif starting_unit == 'm':
         output = np.divide(measurement_to_convert, 0.0254)
     else:
         print('Unit is not recognized')
@@ -113,23 +113,34 @@ def conv_in_m(measurement_to_convert, starting_unit):
 
 # Find the index of the closest value in an array to the input variable
 def find_closest(p_max, value, Orifices):
-   possible = np.linspace(350000, p_max, num=200)
-   Areas = A_orf(Orifices)
-   APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, possible),
-                    index=possible, columns=Orifices)
-   idx = APu_poss.sub(value).abs().min().idxmin()
-   val = APu_poss.sub(value).abs().min(axis=1).idxmin()
-   Pressure = conv_Pa_psi(val,'Pa')
-   Orifice_size = conv_in_m(idx, 'm')
-   return (Pressure, Orifice_size)
+    possible = np.linspace(350000, p_max, num=200)
+    Areas = A_orf(Orifices)
+    APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, possible),
+                            index=possible, columns=Orifices)
+    idx = APu_poss.sub(value).abs().min().idxmin()
+    val = APu_poss.sub(value).abs().min(axis=1).idxmin()
+    Pressure = conv_Pa_psi(val, 'Pa')
+    Orifice_size = conv_in_m(idx, 'm')
+    return (Pressure, Orifice_size)
+
 
 # Convert from Pa to Psi and from psi to Pa
-def conv_Pa_psi(value,starting_unit):
-    if starting_unit=='psi':
+def conv_Pa_psi(value, starting_unit):
+    if starting_unit == 'psi':
         output = np.multiply(value, 6894.75728)
-    elif starting_unit=='Pa':
+    elif starting_unit == 'Pa':
         output = np.multiply(value, 0.000145037738007)
     else:
         print('Unit is not recognized')
     return output
-    
+
+
+# Calculate the required pressure and orifice size for the prescribed
+# conditions
+def pressure_orifice_finder(gas, m_dot_gas, T, P_avg, Orifices, p_max_gas):
+    [rho_gas, k_gas, MW_gas] = Calc_Props(gas, T, P_avg)
+    # APu is the product of the orifice area and upstream pressure calculated
+    # by rearranging the mass flow rate equation for a sonic orifice
+    APu_gas = APu_prod(m_dot_gas, T, gas, P_avg)
+    [Pressure, Orifice] = find_closest(p_max_gas, APu_gas, Orifices)
+    return (Pressure, Orifice)
