@@ -83,7 +83,7 @@ def m_dot(Orifice, or_unit, P_u, p_unit, T, Gas):
     A = A_orf(Orifice)
     [rho, k, MW] = Calc_Props(Gas, T, P_u)
     R = ct.gas_constant
-    m_dot = A * P_u * k * np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((k*R*T)/MW)
+    m_dot = A * P_u * np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((R*T)/(k*MW))
     return m_dot
 
 
@@ -131,15 +131,16 @@ def conv_Pa_psi(value, starting_unit, ending_unit):
 
 # Calculate the required pressure and orifice size for the prescribed
 # conditions
-def pressure_orifice_finder(gas, m_dot_gas, T, P_avg, Orifices, p_max_gas):
+def pressure_orifice_finder(gas, m_dot_gas, T, P_avg, Orifices, p_max_gas,
+                            p_min_gas):
     # APu is the product of the orifice area and upstream pressure calculated
     # by rearranging the mass flow rate equation for a sonic orifice
     APu_gas = APu_prod(m_dot_gas, T, gas, P_avg)
     # Find the index of the closest value in an array to the input variable
-    possible = np.linspace(350000, p_max_gas, num=10000)
+    possible_pressure = np.linspace(p_min_gas, p_max_gas, num=10000)
     Areas = A_orf(Orifices)
-    APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, possible),
-                            index=possible, columns=Orifices)
+    APu_poss = pd.DataFrame(np.einsum('i,j-> ji', Areas, possible_pressure),
+                            index=possible_pressure, columns=Orifices)
     idx = APu_poss.sub(APu_gas).abs().min().idxmin()
     val = APu_poss.sub(APu_gas).abs().min(axis=1).idxmin()
     Pressure = conv_Pa_psi(val, 'Pa', 'psi')
