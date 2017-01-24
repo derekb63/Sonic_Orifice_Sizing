@@ -23,12 +23,12 @@ ox = 'N2O'
 phi = 1
 T = 298
 P = 101325
-P_avg = 700000
+P_avg = 700000 #7 atm
 L = 2
 D_tube = 0.0762
 Op_freq = 1
 p_max_ox = 1.379E6
-p_max_fuel = 689467
+p_max_fuel = 1E6#689467
 p_min_gas = ct.one_atm
 
 # Possible orifice sizes with converted to m for inputting into the
@@ -51,6 +51,7 @@ m_dot_tube = A_orf(D_tube)*L*rho_mix*Op_freq
 m_dot_ox = m_dot_tube / (1 + F_O)
 # Use the matching function to find the nearest orifice and pressure
 # combination for the oxidizer
+# Orifices = np.array(conv_in_m([.040,0.142], 'in', 'm'))
 [Pressure_ox, Orifice_ox] = pressure_orifice_finder(ox, m_dot_ox, T, P_avg,
                                                     Orifices, p_max_ox,
                                                     p_min_gas)
@@ -59,6 +60,7 @@ m_dot_ox = m_dot_tube / (1 + F_O)
 m_dot_fuel = m_dot_tube - m_dot_ox
 # Use the matching function to find the nearest orifice and pressure
 # combination for the fuel
+# Orifices = np.array(conv_in_m([0.047], 'in', 'm'))
 [Pressure_f, Orifice_f] = pressure_orifice_finder(fuel, m_dot_fuel, T, P_avg,
                                                   Orifices, p_max_fuel,
                                                   p_min_gas)
@@ -70,6 +72,8 @@ error_ox = np.divide(m_dot_ox-m_dot_ox_check, m_dot_ox) * 100
 m_dot_fuel_check = m_dot(Orifice_f, 'in', Pressure_f, 'psi', T, fuel)
 error_fuel = np.divide(m_dot_fuel-m_dot_fuel_check, m_dot_fuel) * 100
 
+
+print()
 print(((m_dot_fuel_check/m_dot_ox_check) - F_O)/F_O * 100)
 print(round(Pressure_f, 2), round(Orifice_f, 3), round(error_fuel, 10))
 print(round(Pressure_ox, 2), round(Orifice_ox, 3), round(error_ox, 10))

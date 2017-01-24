@@ -52,7 +52,11 @@ def Fuel_Oxidizer_Ratio(phi, fuel, ox):
     F_O = phi*F_O_s
     return F_O
 
+if __name__ == '__main__':
+    F_O=Fuel_Oxidizer_Ratio(1,'CH4','O2')
 
+
+    
 # Calc_Props takes the input termperature and pressure of the specified gas and
 # outputs the properties required for the calculation of the mass flow rate
 # through the sonic orifice using Cantera and GriMech 3.0
@@ -65,8 +69,8 @@ def Calc_Props(Gas, T, P):
     return rho, k, MW
 
 
-# Mix_rho caclulates the density of the completely burned products to get a
-# more accurate extiamte of the flow rates that the PDE will need rather than
+# Mix_rho caclulates the density of the fuel and oxidizer to get a
+# more accurate estimate of the flow rates that the PDE will need rather than
 # just using air
 def Mix_rho(fuel, ox, F_O, T, P):
     gas = ct.Solution('gri30.cti')
@@ -83,7 +87,7 @@ def m_dot(Orifice, or_unit, P_u, p_unit, T, Gas):
     A = A_orf(Orifice)
     [rho, k, MW] = Calc_Props(Gas, T, P_u)
     R = ct.gas_constant
-    m_dot = A * P_u * np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((R*T)/(k*MW))
+    m_dot = A * P_u * k * np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((R*T)/(k*MW))
     return m_dot
 
 
@@ -99,7 +103,7 @@ def A_orf(D):
 def APu_prod(m_dot, T, Gas, P_guess):
     [rho, k, MW] = Calc_Props(Gas, T, P_guess)
     R = ct.gas_constant
-    APu = (m_dot*np.sqrt((k*R*T)/MW))/np.sqrt((2/(k+1))**((k+1)/(k-1)))
+    APu = (m_dot*np.sqrt((k*R*T)/MW))/np.sqrt((2/(k+1))**((k+1)/(k-1)))/k
     return APu
 
 
@@ -143,6 +147,23 @@ def pressure_orifice_finder(gas, m_dot_gas, T, P_avg, Orifices, p_max_gas,
                             index=possible_pressure, columns=Orifices)
     idx = APu_poss.sub(APu_gas).abs().min().idxmin()
     val = APu_poss.sub(APu_gas).abs().min(axis=1).idxmin()
+    print(val)
     Pressure = conv_Pa_psi(val, 'Pa', 'psi')
+    print(Pressure)
     Orifice = conv_in_m(idx, 'm', 'in')
+    
+    print(APu_poss)
+    '''
+    print()
+    print(idx)
+    x=APu_poss.sub(APu_gas).abs().min()
+    print(x)
+    print()
+    '''
     return (Pressure, Orifice)
+
+
+
+
+
+
