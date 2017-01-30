@@ -1,0 +1,118 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{nomencl}
+\usepackage{standalone}
+\usepackage{tikz}
+\usetikzlibrary{shapes,trees,arrows}
+\usepackage{multicol}
+\usepackage{amsmath}
+
+
+\title{Orifice Configuration Determination}
+\author{Derek Bean}
+\date{\today}
+\makenomenclature
+
+\bibliographystyle{ieeetr}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{listings}
+\usepackage{color}
+\usepackage{courier}
+
+%New colors defined below
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+%Code listing style named "mystyle"
+\lstdefinestyle{mystyle}{
+  backgroundcolor=\color{backcolour},   commentstyle=\color{codegreen},
+  keywordstyle=\color{magenta},
+  numberstyle=\scriptsize\color{codegray},
+  stringstyle=\color{codepurple},
+  basicstyle=\small\ttfamily,
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=b,                    
+  keepspaces=true,                 
+  numbers=left,                    
+  numbersep=5pt,                  
+  showspaces=false,                
+  showstringspaces=false,
+  showtabs=false,                  
+  tabsize=2
+}
+
+\lstset{style=mystyle}
+\usepackage{float}
+    \restylefloat{table}
+\makenomenclature
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+The goal of this Python code is to take in operating parameters of the Pulse Detonation Engine (PDE) and output the desired orifice diameters and upstream pressures to be set before operation. The input and output parameters are as follows:
+\begin{multicols}{2}
+    \subsection*{Inputs}
+        \begin{itemize}
+            \item Fuel
+            \item Oxidizer
+            \item Equivalence ratio
+            \item Estimated gas temperature 
+            \item Downstream pressure
+            \item PDE length
+            \item PDE inner diameter
+            \item PDE operating frequency
+            \item Maximum fuel pressure
+            \item Maximum oxidizer pressure
+            \item Minimum upstream pressure
+            \item Possible orifice sizes
+            
+        \end{itemize}
+\columnbreak
+    \subsection*{Outputs}
+        \begin{itemize}
+            \item Fuel orifice size
+            \item Fuel pressure setting 
+            \item Oxidizer orifice size
+            \item Oxidizer pressure setting 
+        \end{itemize}
+\end{multicols}
+    
+\section*{Base Equations}
+    Mass flow rate through the orifice 
+  \printnomenclature
+        \nomenclature{$\dot{m}$}{mass flow rate of fluid ($\frac{kg}{s}$)}
+        \nomenclature{$P_o$}{Upstream pressure ($kPa$)}
+        \nomenclature{k}{ratio of specific heats}
+        \nomenclature{R}{gas constant ($\frac{kPa\cdot m^3}{kmol\cdot k}$)}
+        \nomenclature{MW}{molecular weight ($\frac{kg}{kmol}$)}
+        \nomenclature{T}{temperature (K)}
+          
+        \[
+            \dot{m} = AP_{o}k \frac{\sqrt{\frac{2}{k+1}^{\frac{k+1}{k-1}}}}{\sqrt{\frac{kRT}{MW}}}  \tag{Sutton 3-24 ~\cite{Sutton2001}}
+        \]
+    Since the unknowns in this equation are the area and upstream pressure of the orifice the mass flow rate equation can be rearranged, resulting in.
+        \[
+           AP_{o} = \frac{ \dot{m}k\sqrt{\frac{kRT}{MW}}}{\sqrt{\frac{2}{k+1}^{\frac{k+1}{k-1}}}} 
+        \]
+\section*{Calculation logic}
+    \begin{figure}[H]
+            \begin{center}
+                \includestandalone[width=0.75\textwidth]{Logic_flow}
+            \end{center}
+            \end{figure}
+\section*{Codes}
+    \subsection*{Main File}
+        The most recent version of the main code is shown below
+            \lstinputlisting[language=Python]{flowproject.py}
+    \subsection*{Functions}
+         The most recent collection of the functions is shown below
+            \lstinputlisting[language=Python]{flowprojectfunc.py}
+
+\bibliography{mendeley}
+
+
+\end{document}
