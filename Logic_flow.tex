@@ -1,0 +1,54 @@
+\documentclass{standalone}
+\usepackage{tikz}\usepackage{graphicx}
+
+\usetikzlibrary{shapes,arrows}
+\usetikzlibrary{shapes.geometric,positioning}
+\usepackage{amsmath}
+
+\begin{document}
+
+%$\dot{m} = AP_{o}k \frac{\sqrt{\frac{2}{k+1}^{\frac{k+1}{k-1}}}}{\sqrt{\frac{kRT}{MW}}}$
+\tikzstyle{decision} = [diamond, draw, fill=blue!20,
+    text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{in_out} = [rectangle, draw, fill=red!20, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse,fill=red!20, node distance=3cm,
+    minimum height=2em]
+    
+\begin{tikzpicture}[node distance = 2.5cm, auto]
+    % Place nodes
+    \node [in_out] (input) {Input Parameters};
+    \node [block, below of=input] (FO) {Determine $\frac{F}{O}$};
+    \node [block, right of=FO] (MPDE) {Determine $\dot{m}_{PDE}$};
+    \node [block, right of=MPDE] (MF) {Determine $\dot{m}_{fuel}$};
+    \node [block, below of=MF] (MO) {Determine $\dot{m}_{ox}$};
+    \node [block, right of=input] (identify) {Determine all possible $AP_{o}$ combinations};
+    \node [block, right of=MF] (APoF) {Calculate $AP_{o}$ for fuel};
+    \node [block, right of=MO] (APoO) {Calculate $AP_{o}$ for ox};
+    \node [block, right of=APoF] (matchF) {Find closest $AP_{o}$ value};
+    \node [block, right of=APoO] (matchO) {Find closest $AP_{o}$ value};
+    \node [in_out, right of=matchF] (resultF) {Return output values};
+    \node [in_out, right of=matchO] (resultO) {Return output values};
+
+    % Draw edges
+    \path [line] (input) -- (FO);
+    \path [line] (input) -- (identify);
+    \path [line, dashed] (identify) -| (matchF);
+    \path [line, dashed] (matchF) -- (matchO);
+    \path [line] (FO) -- (MPDE);
+    \path [line] (MPDE) -- (MF);
+    \path [line] (MF) -- (APoF);
+    \path [line] (MO) -- (APoO);
+    \path [line] (MPDE) |- (MO);
+    \path [line] (APoF) -- (matchF);
+    \path [line] (APoO) -- (matchO);
+    \path [line] (matchF) -- (resultF);
+    \path [line] (matchO) -- (resultO);
+    %\path [line] (update) |- (identify);
+    %\path [line] (decide) -- node {no}(stop);
+    %\path [line,dashed] (expert) -- (init);
+\end{tikzpicture}
+\end{document}
