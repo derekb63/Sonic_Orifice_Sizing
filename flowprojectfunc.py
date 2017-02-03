@@ -81,13 +81,13 @@ def Mix_rho(fuel, ox, F_O, T, P):
 
 
 # Return the mass flow rate through the sonic orifice assuming the ideal gas
-def m_dot(Orifice, or_unit, P_u, p_unit, T, Gas):
+def m_dot(Orifice, or_unit, P_u, p_unit, T, Gas, C_d=.99):
     Orifice = conv_in_m(Orifice, or_unit, 'm')
     P_u = conv_Pa_psi(P_u, p_unit, 'Pa')
     A = A_orf(Orifice)
     [rho, k, MW] = Calc_Props(Gas, T, P_u)
     R = ct.gas_constant
-    m_dot = A * P_u * k * np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((R*T)/(k*MW))
+    m_dot = A*P_u*k*C_d*np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((R*T)/(k*MW))
     return m_dot
 
 
@@ -100,10 +100,10 @@ def A_orf(D):
 # Calculate the product of the area and upstream pressure since both of these
 # variables are varaible in the experiment and constrined betwwe nsome values
 # the product of the two will be used to find the optimal orifice and pressure
-def APu_prod(m_dot, T, Gas, P_guess):
+def APu_prod(m_dot, T, Gas, P_guess, C_d=.99):
     [rho, k, MW] = Calc_Props(Gas, T, P_guess)
     R = ct.gas_constant
-    APu = (m_dot*np.sqrt((k*R*T)/MW))/np.sqrt((2/(k+1))**((k+1)/(k-1)))/k
+    APu = (m_dot*np.sqrt((k*R*T)/MW))/(k*C_d*np.sqrt((2/(k+1))**((k+1)/(k-1))))
     return APu
 
 
