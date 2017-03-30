@@ -107,6 +107,14 @@ def APu_prod(m_dot, T, Gas, P_guess, C_d=.99):
     return APu
 
 
+def D_orifice_calc(m_dot, T, Gas, P_1, C_d=0.99):
+    [rho, k, MW] = Calc_Props(Gas, T, P_1)
+    R = ct.gas_constant
+    A = (m_dot*np.sqrt((k*R*T)/MW)) /\
+        (k*C_d*P_1*np.sqrt((2/(k+1))**((k+1)/(k-1))))
+    D = np.sqrt((4*A)/np.pi)
+    return conv_in_m(D, 'm', 'in')
+
 # Convert from in to m
 def conv_in_m(measurement_to_convert, starting_unit, ending_unit):
     if starting_unit == ending_unit:
@@ -147,12 +155,12 @@ def pressure_orifice_finder(gas, m_dot_gas, T, P_avg, Orifices, p_max_gas,
                             index=possible_pressure, columns=Orifices)
     idx = APu_poss.sub(APu_gas).abs().min().idxmin()
     val = APu_poss.sub(APu_gas).abs().min(axis=1).idxmin()
-    print(val)
+#    print(val)
     Pressure = conv_Pa_psi(val, 'Pa', 'psi')
-    print(Pressure)
+#    print(Pressure)
     Orifice = conv_in_m(idx, 'm', 'in')
     
-    print(APu_poss)
+#    print(APu_poss)
     '''
     print()
     print(idx)

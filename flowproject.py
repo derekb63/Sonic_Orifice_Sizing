@@ -18,22 +18,22 @@ from flowprojectfunc import m_dot
 
 t0 = time.time()
 # Input parameters to define the PDE/System variables
-fuel = 'C3H8'
-ox = 'N2O'
+fuel = 'CH4'
+ox = 'O2'
 phi = 1
 T = 298
 P = 101325
 P_avg = 700000 #7 atm
 L = 2
-D_tube = 0.0762
-Op_freq = 1
-p_max_ox = 1.379E6
-p_max_fuel = 1E6#689467
+D_tube = 0.08
+Op_freq = 2
+p_max_ox = 2E6
+p_max_fuel = 2E6#689467
 p_min_gas = ct.one_atm
 
 # Possible orifice sizes with converted to m for inputting into the
 # find_closest function
-Orifices = np.array(conv_in_m([0.040, 0.047, 0.063, 0.142], 'in', 'm'))
+Orifices = np.array(conv_in_m(np.linspace(0.001, 0.250, num=1000), 'in', 'm'))
 # Orifices = conv_in_m(np.linspace(0.001, 0.150, num=1000), 'in', 'm')
 fuel_error = []
 ox_error = []
@@ -74,10 +74,10 @@ error_fuel = np.divide(m_dot_fuel-m_dot_fuel_check, m_dot_fuel) * 100
 
 
 print()
-print(((m_dot_fuel_check/m_dot_ox_check) - F_O)/F_O * 100)
-print(round(Pressure_f, 2), round(Orifice_f, 3), round(error_fuel, 10))
-print(round(Pressure_ox, 2), round(Orifice_ox, 3), round(error_ox, 10))
+print('FO Error: ', ((m_dot_fuel_check/m_dot_ox_check) - F_O)/F_O * 100, '%')
+print('Fuel: ', round(Pressure_f, 2), round(Orifice_f, 3), round(error_fuel, 10))
+print('Ox: ', round(Pressure_ox, 2), round(Orifice_ox, 3), round(error_ox, 10))
 
 t1 = time.time()
 total = t1-t0
-print(total)
+print('Time: ', total)
