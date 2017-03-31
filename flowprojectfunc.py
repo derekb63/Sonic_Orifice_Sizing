@@ -87,7 +87,7 @@ def m_dot(Orifice, or_unit, P_u, p_unit, T, Gas, C_d=.99):
     A = A_orf(Orifice)
     [rho, k, MW] = Calc_Props(Gas, T, P_u)
     R = ct.gas_constant
-    m_dot = A*P_u*k*C_d*np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((R*T)/(k*MW))
+    m_dot = A*P_u*k*C_d*np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((R*T*k)/(MW))
     return m_dot
 
 

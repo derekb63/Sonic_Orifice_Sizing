@@ -8,6 +8,7 @@ Created on Sat Dec 10 13:33:10 2016
 import time
 import numpy as np
 import cantera as ct
+from tabulate import tabulate
 
 from flowprojectfunc import Fuel_Oxidizer_Ratio
 from flowprojectfunc import Mix_rho
@@ -27,13 +28,13 @@ P_avg = 700000 #7 atm
 L = 2
 D_tube = 0.08
 Op_freq = 2
-p_max_ox = 2E6
+p_max_ox = 3E6
 p_max_fuel = 2E6#689467
 p_min_gas = ct.one_atm
 
 # Possible orifice sizes with converted to m for inputting into the
 # find_closest function
-Orifices = np.array(conv_in_m(np.linspace(0.001, 0.250, num=1000), 'in', 'm'))
+Orifices = np.array(conv_in_m(np.arange(0.001, 0.250, 0.001), 'in', 'm'))
 # Orifices = conv_in_m(np.linspace(0.001, 0.150, num=1000), 'in', 'm')
 fuel_error = []
 ox_error = []
@@ -72,12 +73,17 @@ error_ox = np.divide(m_dot_ox-m_dot_ox_check, m_dot_ox) * 100
 m_dot_fuel_check = m_dot(Orifice_f, 'in', Pressure_f, 'psi', T, fuel)
 error_fuel = np.divide(m_dot_fuel-m_dot_fuel_check, m_dot_fuel) * 100
 
-
-print()
-print('FO Error: ', ((m_dot_fuel_check/m_dot_ox_check) - F_O)/F_O * 100, '%')
-print('Fuel: ', round(Pressure_f, 2), round(Orifice_f, 3), round(error_fuel, 10))
-print('Ox: ', round(Pressure_ox, 2), round(Orifice_ox, 3), round(error_ox, 10))
+print(tabulate([[fuel, round(Pressure_f, 2), Orifice_f,
+               '{0:.2E}'.format(error_fuel)],
+                [ox, round(Pressure_ox, 2), Orifice_ox,
+                '{0:.2E}'.format(error_ox)]],
+               headers=['', 'Pressure (psi)', 'Diameter (in)', 'Error (%)']))
+# print('FO Error: ', ((m_dot_fuel_check/m_dot_ox_check) - F_O)/F_O * 100, '%')
+# print('Fuel: ')
+# print('Pressure (psi):', 'Orifice Diameter (in):', 'Error (%)')
+# print(round(Pressure_f, 2), round(Orifice_f, 3), round(error_fuel, 10))
+# print('Ox: ', round(Pressure_ox, 2), round(Orifice_ox, 3), round(error_ox, 10))
 
 t1 = time.time()
 total = t1-t0
-print('Time: ', total)
+#print('Time: ', total)

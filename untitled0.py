@@ -29,3 +29,15 @@ def m_dot(Orifice, or_unit, P_u, p_unit, T, Gas, C_d=.99):
     R = ct.gas_constant
     m_dot = A*P_u*k*C_d*np.sqrt((2/(k+1))**((k+1)/(k-1)))/np.sqrt((R*T)/(k*MW))
     return m_dot
+
+
+# Calc_Props takes the input termperature and pressure of the specified gas and
+# outputs the properties required for the calculation of the mass flow rate
+# through the sonic orifice using Cantera and GriMech 3.0
+def Calc_Props(Gas, T, P):
+    gas = ct.Solution('gri30.cti')
+    gas.TPX = T, P, '{0}:1'.format(Gas)
+    rho = gas.density
+    k = gas.cp_mass/gas.cv_mass
+    MW = gas.mean_molecular_weight
+    return rho, k, MW
