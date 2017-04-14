@@ -93,7 +93,10 @@ def m_dot(Orifice, or_unit, P_u, p_unit, T, Gas, C_d=.99):
 
 # Caclualte the are of the orifice based on the orifice diameter
 def A_orf(D):
-    A_orf = np.pi / 4 * D**2
+    try:
+        A_orf = np.pi / 4 * D**2
+    except:
+        A_orf = [np.pi / 4 * D**2 for D in D]
     return A_orf
 
 

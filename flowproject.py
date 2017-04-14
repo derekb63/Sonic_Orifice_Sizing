@@ -9,6 +9,9 @@ import time
 import numpy as np
 import cantera as ct
 from tabulate import tabulate
+from sympy.solvers import solve
+from sympy import Symbol
+import matplotlib.pyplot as plt
 
 from flowprojectfunc import Fuel_Oxidizer_Ratio
 from flowprojectfunc import Mix_rho
@@ -19,9 +22,9 @@ from flowprojectfunc import m_dot
 
 t0 = time.time()
 # Input parameters to define the PDE/System variables
-fuel = 'CH4'
-ox = 'O2'
-phi = 1
+fuel = 'C3H8'
+ox = 'N2O'
+phi = 1.0
 T = 298
 P = 101325
 P_avg = 700000 #7 atm
@@ -29,8 +32,8 @@ L = 2
 D_tube = 0.08
 Op_freq = 2
 p_max_ox = 3E6
-p_max_fuel = 2E6#689467
-p_min_gas = ct.one_atm
+p_max_fuel = 2E6 # 689467
+p_min_gas = 413685 # ct.one_atm
 
 # Possible orifice sizes with converted to m for inputting into the
 # find_closest function
@@ -87,3 +90,15 @@ print(tabulate([[fuel, round(Pressure_f, 2), Orifice_f,
 t1 = time.time()
 total = t1-t0
 #print('Time: ', total)
+
+m_dot_diluent = Symbol('m_dot_diluent')
+a =[]
+for species_dilution in np.arange(0.05, 0.4, 0.005):
+
+    a.append((solve((m_dot_diluent/(m_dot_diluent+m_dot_fuel+m_dot_ox))-species_dilution,
+                   m_dot_diluent), species_dilution))
+c = [(m_dot(0.052, 'in', x, 'psi', 298, 'CO2'), x) for x in np.linspace(60, 200, num=55)]
+
+plt.plot([i[1] for i in c], [i[0] for i in c])
+plt.xlabel('Upstream Pressure (psi)')
+plt.ylabel('m_dot diluent')
