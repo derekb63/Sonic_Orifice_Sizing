@@ -19,26 +19,43 @@ from flowprojectfunc import A_orf
 from flowprojectfunc import conv_in_m
 from flowprojectfunc import pressure_orifice_finder
 from flowprojectfunc import m_dot
+from flowprojectfunc import conv_Pa_psi
 
 t0 = time.time()
-# Input parameters to define the PDE/System variables
-fuel = 'CH4'
-ox = 'O2'
-phi = 0.75
+
+## Input Parameters ##
+'Note: all units have to be in mksK (meters,kilogram,seconds,Kelvin) units, or their derived units(ie Pa,N, etc)'
+# Fuel/Ox molecular formulas
+fuel = 'C3H8'
+ox = 'N2O'
+
+# Fuel Oxidizer Ratio
+phi = 1.0
+# ambient conditions
 T = 298
 P = 101325
+# ??
 P_avg = 700000 #7 atm
-L = 2
-D_tube = 0.08
-Op_freq = 2
-p_max_ox = 10E6
-p_max_fuel = 2E6 # 689467
-p_min_gas = 413685 # ct.one_atm
+# tube physical dimensions
+L = conv_in_m(12,'in','m')
+D_tube = conv_in_m(0.5,'in','m')
 
-# Possible orifice sizes with converted to m for inputting into the
-# find_closest function
-Orifices = np.array(conv_in_m(np.arange(0.001, 0.250, 0.001), 'in', 'm'))
-# Orifices = conv_in_m(np.linspace(0.001, 0.150, num=1000), 'in', 'm')
+# the amount of time you want the valves open, in Hz
+Op_freq = 20
+
+' Input variables to iterate across to find optimal orifices'
+# min and max pressures allowed for the fuel and oxidizer
+p_max_ox = conv_Pa_psi(130, 'psi','Pa')
+p_max_fuel = conv_Pa_psi(80, 'psi','Pa')
+p_min_gas = conv_Pa_psi(20, 'psi','Pa') 
+
+# Possible orifice sizes
+Orifices = np.array(conv_in_m(np.arange(0.0125, 0.250, 0.001), 'in', 'm'))
+
+## End Input Parameters ##
+
+
+
 fuel_error = []
 ox_error = []
 
@@ -80,7 +97,7 @@ print(tabulate([[fuel, round(Pressure_f, 2), Orifice_f,
                '{0:.2E}'.format(error_fuel)],
                 [ox, round(Pressure_ox, 2), Orifice_ox,
                 '{0:.2E}'.format(error_ox)]],
-               headers=['', 'Pressure (psi)', 'Diameter (in)', 'Error (%)']))
+               headers=['Molecule', 'Pressure (psi)', 'Diameter (in)', 'Error (%)']))
 # print('FO Error: ', ((m_dot_fuel_check/m_dot_ox_check) - F_O)/F_O * 100, '%')
 # print('Fuel: ')
 # print('Pressure (psi):', 'Orifice Diameter (in):', 'Error (%)')
@@ -99,6 +116,15 @@ for species_dilution in np.arange(0.05, 0.4, 0.005):
                    m_dot_diluent), species_dilution))
 c = [(m_dot(0.052, 'in', x, 'psi', 298, 'CO2'), x) for x in np.linspace(60, 200, num=55)]
 
-#plt.plot([i[1] for i in c], [i[0] for i in c])
-#plt.xlabel('Upstream Pressure (psi)')
-#plt.ylabel('m_dot diluent')
+plt.plot([i[1] for i in c], [i[0] for i in c])
+plt.xlabel('Upstream Pressure (psi)')
+plt.ylabel('m_dot diluent')
+
+#plt.show()
+
+
+
+
+
+
+
