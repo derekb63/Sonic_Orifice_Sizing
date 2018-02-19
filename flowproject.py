@@ -35,25 +35,26 @@ phi = 1.0
 T = 298
 P = 101325
 # ??
-P_avg = 700000 #7 atm
+P_avg = 700000  # 7 atm
 # tube physical dimensions
-L = conv_in_m(12,'in','m')
-D_tube = conv_in_m(0.5,'in','m')
+L = conv_in_m(18, 'in', 'm')
+D_tube = conv_in_m(0.43, 'in', 'm')
 
 # the amount of time you want the valves open, in Hz
 Op_freq = 20
 
 ' Input variables to iterate across to find optimal orifices'
 # min and max pressures allowed for the fuel and oxidizer
-p_max_ox = conv_Pa_psi(185, 'psi','Pa')
-p_max_fuel = conv_Pa_psi(95, 'psi','Pa')
-p_min_gas = conv_Pa_psi(60, 'psi','Pa') 
+p_max_ox = conv_Pa_psi(165, 'psi', 'Pa')
+p_max_fuel = conv_Pa_psi(300, 'psi', 'Pa')
+p_min_gas = conv_Pa_psi(100, 'psi', 'Pa')
 
-# Possible orifice sizes
+# Possible orifice sizes list taken from the standard sizes McMaster supplies
 #Orifices = np.array(conv_in_m(np.arange(0.0125, 0.250, 0.001), 'in', 'm'))
-Orifices = np.array(conv_in_m([0.010, 0.016, 0.018, 0.020, 0.021, 0.023, 0.024, 0.025, 0.026,
-                               0.028, 0.029, 0.032, 0.033, 0.035, 0.038, 0.040, 0.042, 0.047,
-                               0.052, 0.055, 0.063, 0.125], 'in', 'm'))
+Orifices = np.array(conv_in_m([0.010, 0.016, 0.018, 0.020, 0.021, 0.023, 0.024,
+                               0.025, 0.026, 0.028, 0.029, 0.032, 0.033, 0.035,
+                               0.038, 0.040, 0.042, 0.047, 0.052, 0.055, 0.063,
+                               0.125], 'in', 'm'))
 ## End Input Parameters ##
 
 
@@ -75,9 +76,12 @@ m_dot_ox = m_dot_tube / (1 + F_O)
 # Use the matching function to find the nearest orifice and pressure
 # combination for the oxidizer
 # Orifices = np.array(conv_in_m([.040,0.142], 'in', 'm'))
+
 [Pressure_ox, Orifice_ox] = pressure_orifice_finder(ox, m_dot_ox, T, P_avg,
                                                     Orifices, p_max_ox,
                                                     p_min_gas)
+
+
 
 # Calculate the mass flow rate of the oxidizer for the defined conditions
 m_dot_fuel = m_dot_tube - m_dot_ox
@@ -111,7 +115,7 @@ total = t1-t0
 #print('Time: ', total)
 
 m_dot_diluent = Symbol('m_dot_diluent')
-a =[]
+a = []
 for species_dilution in np.arange(0.05, 0.4, 0.005):
 
     a.append((solve((m_dot_diluent/(m_dot_diluent+m_dot_fuel+m_dot_ox))-species_dilution,
