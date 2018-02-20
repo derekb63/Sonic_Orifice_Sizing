@@ -27,18 +27,21 @@ ox = 'O2'
 phi = 0.75
 T = 298
 P = 101325
-P_avg = 700000 #7 atm
+P_avg = 500000 #7 atm
 L = 2
-D_tube = 0.08
+D_tube = 0.076
 Op_freq = 2
-p_max_ox = 10E6
-p_max_fuel = 2E6 # 689467
-p_min_gas = 413685 # ct.one_atm
+p_max_ox = 3E6
+p_max_fuel = 1.7E6 # 689467
+p_min_gas = 5E5 # ct.one_atm
 
 # Possible orifice sizes with converted to m for inputting into the
 # find_closest function
-Orifices = np.array(conv_in_m(np.arange(0.001, 0.250, 0.001), 'in', 'm'))
-# Orifices = conv_in_m(np.linspace(0.001, 0.150, num=1000), 'in', 'm')
+#Orifices = np.array(conv_in_m(np.arange(0.001, 0.250, 0.001), 'in', 'm'))
+Orifices = np.array(conv_in_m([0.010, 0.016, 0.018, 0.020, 0.021, 0.023, 0.024,
+                               0.025, 0.026, 0.028, 0.029, 0.032, 0.033, 0.035,
+                               0.038, 0.040, 0.042, 0.047, 0.052, 0.055, 0.063,
+                               0.125], 'in', 'm'))
 fuel_error = []
 ox_error = []
 
@@ -57,7 +60,7 @@ m_dot_ox = m_dot_tube / (1 + F_O)
 # combination for the oxidizer
 # Orifices = np.array(conv_in_m([.040,0.142], 'in', 'm'))
 [Pressure_ox, Orifice_ox] = pressure_orifice_finder(ox, m_dot_ox, T, P_avg,
-                                                    Orifices, p_max_ox,
+                                                    [0.00254], p_max_ox,
                                                     p_min_gas)
 
 # Calculate the mass flow rate of the oxidizer for the defined conditions
